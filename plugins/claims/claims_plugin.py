@@ -153,6 +153,10 @@ class ClaimsPlugin(SimpleCommandPlugin):
                     'Can\'t claim ships (at the moment)'
                 )
                 return
+            if planet == 'On Outpost':
+                self.protocol.send_chat_message('^green;Instances cannot be claimed.')
+                self.logger.info('^green;Claiming of an instance denied.')
+                return
             if planet not in self.protected_planets:
                 self.protected_planets.append(planet)
                 self.protocol.send_chat_message('Planet successfully claimed.')
