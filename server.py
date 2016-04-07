@@ -758,6 +758,10 @@ class StarryPyServerFactory(ServerFactory):
 
         :rtype : Protocol
         """
+        #Force reaping protocols before building protocol. This isn't pretty, but it provides a quick fix for when the reaper stalls.
+        logger.vdebug('Reaping dead protocols before building protocol.')
+        self.reap_dead_protocols()
+
         logger.vdebug('Building protocol to address %s', address)
         p = ServerFactory.buildProtocol(self, address)
         return p
