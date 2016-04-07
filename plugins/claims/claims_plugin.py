@@ -10,7 +10,7 @@ class ClaimsPlugin(SimpleCommandPlugin):
     """
     name = 'claims'
     description = 'Claims planets.'
-    commands = ['claim', 'unclaim', 'claim_list', 'unclaimable']
+    commands = ['claim', 'unclaim', 'claim_list', 'unclaimable', 'claim_add', 'claim_remove']
     depends = ['player_manager_plugin', 'command_plugin', 'planet_protect']
 
     def activate(self):
@@ -331,6 +331,243 @@ class ClaimsPlugin(SimpleCommandPlugin):
                             first_name_color
                         )
                     )
+        self.save()
+
+    @permissions(UserLevels.GUEST)
+    def claim_add(self, data):
+        """
+        Adds a player to a planet's claim list. Only the owner of the planet or an admin can use this.
+        Syntax: /claim_add <player>
+        """
+        if self.protocol.player.planet in self.unclaimable_planets:
+            self.protocol.send_chat_message(
+                '^green;This planet ^red;cannot^green; be claimed!'
+            )
+            return
+        try:
+            my_storage = self.protocol.player.storage
+        except AttributeError:
+            return
+
+        # set storage to 0 if player never used any of the claim commands
+        if 'claims' not in my_storage:
+            self.protocol.send_chat_message(
+                '^green;You must claim a planet first before adding players to its list.'
+            )
+
+        # assuming player is eligible to claim
+        planet = self.protocol.player.planet
+        on_ship = self.protocol.player.on_ship
+        if not data:
+            self.protocol.send_chat_message(
+                '^green;You must specify a player name to add.'
+            )
+        else:
+            addplayer = data[0]
+            try:
+                addplayer, rest = extract_name(data)
+                addplayer = self.player_manager.get_by_name(
+                    addplayer
+                ).org_name
+                first_name_color = self.player_manager.get_by_org_name(
+                    addplayer
+                ).colored_name(self.config.colors)
+            except:
+                self.protocol.send_chat_message(
+                    '^green;There\'s no player named: ^yellow;{}'.format(
+                        addplayer
+                    )
+                )
+                return
+
+        first_name = str(addplayer)
+        orgplayer = self.protocol.player.org_name
+
+        try:
+            count = 1
+            for name in self.player_planets[planet]:
+                if name != str(orgplayer) and count == 1:
+                    self.protocol.send_chat_message(
+                        '^green;You can only claim free planets!'
+                    )
+                    return
+                count += 1
+        except:
+            if first_name != orgplayer:
+                self.protocol.send_chat_message(
+                    '^green;Use /claim if you wish to claim a planet!'
+                )
+                return
+
+        try:
+            for _ in self.player_planets:
+                if first_name in self.player_planets[
+                    self.protocol.player.planet
+                ]:
+                    self.protocol.send_chat_message(
+                        '^green;Player ^yellow;{}^green; is already in '
+                        '^green;planet protect list.' .format(first_name_color)
+                    )
+                    return
+        except:
+            pass
+
+        # reset planet back to current planet
+        planet = self.protocol.player.planet
+        if on_ship and not ('force' in ' '.join(data).lower()):
+            self.protocol.send_chat_message(
+                '^green;Can\'t claim ships (at the moment)'
+            )
+            return
+        if planet == 'On Outpost':
+            self.protocol.send_chat_message('^green;Instances cannot be claimed.')
+            self.logger.info('^green;Claiming of an instance denied.')
+            return
+        if planet not in self.protected_planets:
+            self.protocol.send_chat_message(
+            '^green;You must claim a planet first before adding players to its list.'
+        )
+        else:
+            if first_name:
+                #Ok, so, this is where we need to make sure the command issuer is the first entry on the claims and add first_name to the list if they are.
+                if first_name == orgplayer:
+                        self.protocol.send_chat_message(
+                            '^green;Use /claim if you wish to claim a planet!'
+                        )
+                        return
+                elif self.player_planets[planet][0] == orgplayer:
+                    self.protocol.send_chat_message('^green;Planet successfully claimed.')
+                    self.logger.info('^green;Protected planet %s', planet)
+                    self.protocol.player.storage = my_storage
+                    if first_name:
+                        if planet not in self.player_planets:
+                            self.player_planets[planet] = [first_name]
+                        else:
+                            self.player_planets[planet] = (
+                                self.player_planets[planet] + [first_name]
+                            )
+                        self.protocol.send_chat_message(
+                            '^green;Adding ^yellow;{}^green; to planet list.'.format(
+                                first_name_color
+                            )
+                        )
+        self.save()
+
+    @permissions(UserLevels.GUEST)
+    def claim_remove(self, data):
+        """
+        Removes a player from a planet's claim list. Only the owner of the planet or an admin can use this.
+        Syntax: /claim_remove <player>
+        """
+        if self.protocol.player.planet in self.unclaimable_planets:
+            self.protocol.send_chat_message(
+                '^green;This planet ^red;cannot^green; be claimed!'
+            )
+            return
+        try:
+            my_storage = self.protocol.player.storage
+        except AttributeError:
+            return
+
+        # set storage to 0 if player never used any of the claim commands
+        if 'claims' not in my_storage:
+            self.protocol.send_chat_message(
+                '^green;You must claim a planet first before adding people to its list.'
+            )
+
+        # assuming player is eligible to claim
+        planet = self.protocol.player.planet
+        on_ship = self.protocol.player.on_ship
+        if not data:
+            self.protocol.send_chat_message(
+                '^green;You must specify a player name to remove.'
+            )
+        else:
+            addplayer = data[0]
+            try:
+                addplayer, rest = extract_name(data)
+                addplayer = self.player_manager.get_by_name(
+                    addplayer
+                ).org_name
+                first_name_color = self.player_manager.get_by_org_name(
+                    addplayer
+                ).colored_name(self.config.colors)
+            except:
+                self.protocol.send_chat_message(
+                    '^green;There\'s no player named: ^yellow;{}'.format(
+                        addplayer
+                    )
+                )
+                return
+
+        first_name = str(addplayer)
+        orgplayer = self.protocol.player.org_name
+
+        try:
+            count = 1
+            for name in self.player_planets[planet]:
+                if name != str(orgplayer) and count == 1:
+                    self.protocol.send_chat_message(
+                        '^green;You can only remove players from planets you have claimed!'
+                    )
+                    return
+                count += 1
+        except:
+            if first_name != orgplayer:
+                self.protocol.send_chat_message(
+                    '^green;Use /unclaim if you wish to unclaim a planet!'
+                )
+                return
+
+        # reset planet back to current planet
+        planet = self.protocol.player.planet
+        if on_ship and not ('force' in ' '.join(data).lower()):
+            self.protocol.send_chat_message(
+                '^green;Can\'t claim ships (at the moment)'
+            )
+            return
+        if planet not in self.protected_planets:
+            self.protocol.send_chat_message(
+                '^green;You have not claimed this planet.'.format(
+                    first_name_color
+                )
+            )
+        else:
+            if first_name:
+                #Ok, so, this is where we need to make sure the command issuer is the first entry on the claims and add first_name to the list if they are.
+                if self.player_planets[planet][0] == orgplayer:
+                    if first_name == orgplayer:
+                        self.protocol.send_chat_message(
+                            '^green;Use /unclaim if you wish to unclaim a planet!'
+                        )
+                        return
+                    elif first_name in self.player_planets[planet]:
+                        self.player_planets[planet].remove(first_name)
+                        self.protocol.send_chat_message(
+                            '^green;Removing ^yellow;{}^green; to planet list.'.format(
+                                first_name_color
+                            )
+                        )
+                    else:
+                        self.protocol.send_chat_message(
+                            '^green;Could not find ^yellow;{}^green; in planet list!'.format(
+                                first_name_color
+                            )
+                        )
+                    
+            else:
+                if planet not in self.player_planets:
+                    self.player_planets[planet] = [first_name]
+                else:
+                    self.player_planets[planet] = (
+                        self.player_planets[planet] + [first_name]
+                    )
+                self.protocol.send_chat_message(
+                    '^green;Adding ^yellow;%s^green; to planet list'.format(
+                        first_name_color
+                    )
+                )
+
         self.save()
 
     def save(self):
