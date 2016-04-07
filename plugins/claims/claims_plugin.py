@@ -40,19 +40,19 @@ class ClaimsPlugin(SimpleCommandPlugin):
         on_ship = self.protocol.player.on_ship
         if on_ship:
             self.protocol.send_chat_message(
-                'Can\'t claim ships (at the moment)'
+                '^green;Can\'t claim ships (at the moment)'
             )
             return
         if planet not in self.unclaimable_planets:
             self.unclaimable_planets.append(planet)
             self.protocol.send_chat_message(
-                'Planet successfully set as unclaimable.'
+                '^green;Planet successfully set as unclaimable.'
             )
             self.logger.info('Planet %s set as unclaimable', planet)
         else:
             self.unclaimable_planets.remove(planet)
             self.protocol.send_chat_message(
-                'Planet successfully removed from unclaimable list.'
+                '^green;Planet successfully removed from unclaimable list.'
             )
             self.logger.info('Planet %s removed as unclaimable', planet)
         self.save()
@@ -65,7 +65,7 @@ class ClaimsPlugin(SimpleCommandPlugin):
         """
         if self.protocol.player.planet in self.unclaimable_planets:
             self.protocol.send_chat_message(
-                'This planet ^red;cannot^green; be claimed!'
+                '^green;This planet ^red;cannot^green; be claimed!'
             )
             return
         try:
@@ -83,7 +83,7 @@ class ClaimsPlugin(SimpleCommandPlugin):
             my_storage['claims'] = self.max_claims
             self.protocol.player.storage = my_storage
             self.protocol.send_chat_message(
-                'You already have max (^red;%s^green;) '
+                '^green;You already have max (^red;%s^green;) '
                 'claimed planets!'.format(self.max_claims)
             )
 
@@ -108,7 +108,7 @@ class ClaimsPlugin(SimpleCommandPlugin):
                     ).colored_name(self.config.colors)
                 except:
                     self.protocol.send_chat_message(
-                        'There\'s no player named: ^yellow;{}'.format(
+                        '^green;There\'s no player named: ^yellow;{}'.format(
                             addplayer
                         )
                     )
@@ -122,14 +122,14 @@ class ClaimsPlugin(SimpleCommandPlugin):
                 for name in self.player_planets[planet]:
                     if name != str(orgplayer) and count == 1:
                         self.protocol.send_chat_message(
-                            'You can only claim free planets!'
+                            '^green;You can only claim free planets!'
                         )
                         return
                     count += 1
             except:
                 if first_name != orgplayer:
                     self.protocol.send_chat_message(
-                        'Use only /claim if you wish to claim a planet!'
+                        '^green;Use only /claim if you wish to claim a planet!'
                     )
                     return
 
@@ -139,7 +139,7 @@ class ClaimsPlugin(SimpleCommandPlugin):
                         self.protocol.player.planet
                     ]:
                         self.protocol.send_chat_message(
-                            'Player ^yellow;{}^green; is already in '
+                            '^green;Player ^yellow;{}^green; is already in '
                             'planet protect list.' .format(first_name_color)
                         )
                         return
@@ -150,16 +150,16 @@ class ClaimsPlugin(SimpleCommandPlugin):
             planet = self.protocol.player.planet
             if on_ship and not ('force' in ' '.join(data).lower()):
                 self.protocol.send_chat_message(
-                    'Can\'t claim ships (at the moment)'
+                    '^green;Can\'t claim ships (at the moment)'
                 )
                 return
             if planet == 'On Outpost':
-                self.protocol.send_chat_message('^green;Instances cannot be claimed.')
-                self.logger.info('^green;Claiming of an instance denied.')
+                self.protocol.send_chat_message('^green;Instances ^red;cannot^green; be claimed.')
+                self.logger.info('Claiming of an instance denied.')
                 return
             if planet not in self.protected_planets:
                 self.protected_planets.append(planet)
-                self.protocol.send_chat_message('Planet successfully claimed.')
+                self.protocol.send_chat_message('^green;Planet successfully claimed.')
                 self.logger.info('Protected planet %s', planet)
                 my_storage['claims'] = int(my_storage['claims']) + 1
                 self.protocol.player.storage = my_storage
@@ -171,14 +171,14 @@ class ClaimsPlugin(SimpleCommandPlugin):
                             self.player_planets[planet] + [first_name]
                         )
                     self.protocol.send_chat_message(
-                        'Adding ^yellow;{}^green; to planet list'.format(
+                        '^green;Adding ^yellow;{}^green; to planet list'.format(
                             first_name_color
                         )
                     )
             else:
                 if first_name:
                     self.protocol.send_chat_message(
-                        'Planet is already claimed!'
+                        '^green;Planet is already claimed!'
                     )
                 else:
                     if planet not in self.player_planets:
@@ -188,7 +188,7 @@ class ClaimsPlugin(SimpleCommandPlugin):
                             self.player_planets[planet] + [first_name]
                         )
                     self.protocol.send_chat_message(
-                        'Adding ^yellow;%s^green; to planet list'.format(
+                        '^green;Adding ^yellow;%s^green; to planet list'.format(
                             first_name_color
                         )
                     )
@@ -214,18 +214,18 @@ class ClaimsPlugin(SimpleCommandPlugin):
         on_ship = self.protocol.player.on_ship
         if on_ship:
             self.protocol.send_chat_message(
-                'Can\'t claim ships (at the moment)'
+                '^green;Can\'t claim ships (at the moment)'
             )
             return
         if planet in self.player_planets:
             self.protocol.send_chat_message(
-                'Claimed ^cyan;{}^green; of max ^red;{}^green; '
+                '^green;Claimed ^cyan;{}^green; of max ^red;{}^green; '
                 'claimed planets.'.format(
                     my_storage['claims'], self.max_claims
                 )
             )
             self.protocol.send_chat_message(
-                'Players registered to this planet: ^yellow;{}'.format(
+                '^green;Players registered to this planet: ^yellow;{}'.format(
                     '^green;, ^yellow;'.join(self.player_planets[planet])
                     .replace('[', '')
                     .replace(']', '')
@@ -233,18 +233,18 @@ class ClaimsPlugin(SimpleCommandPlugin):
             )
         elif planet in self.unclaimable_planets:
             self.protocol.send_chat_message(
-                'Claimed ^cyan;{}^green; of max ^red;{}^green; '
+                '^green;Claimed ^cyan;{}^green; of max ^red;{}^green; '
                 'claimed planets.'.format(
                     my_storage['claims'],
                     self.max_claims
                 )
             )
             self.protocol.send_chat_message(
-                'This planet ^red;cannot^green; be claimed!'
+                '^green;This planet ^red;cannot^green; be claimed!'
             )
         else:
             self.protocol.send_chat_message(
-                'Claimed ^cyan;%s^green; of max ^red;%s^green; '
+                '^green;Claimed ^cyan;%s^green; of max ^red;%s^green; '
                 'claimed planets.'.format(
                     my_storage['claims'], self.max_claims
                 )
@@ -264,7 +264,7 @@ class ClaimsPlugin(SimpleCommandPlugin):
         if int(my_storage.get('claims', 0)) <= 0:
             my_storage['claims'] = 0
             self.protocol.player.storage = my_storage
-            self.protocol.send_chat_message('You have no claimed planets!')
+            self.protocol.send_chat_message('^green;You have no claimed planets!')
         else:
             planet = self.protocol.player.planet
             on_ship = self.protocol.player.on_ship
@@ -282,7 +282,7 @@ class ClaimsPlugin(SimpleCommandPlugin):
 
             if on_ship:
                 self.protocol.send_chat_message(
-                    'Can\'t claim ships (at the moment)'
+                    '^green;Can\'t claim ships (at the moment)'
                 )
                 return
             try:
@@ -290,12 +290,12 @@ class ClaimsPlugin(SimpleCommandPlugin):
                 for name in self.player_planets[planet]:
                     if name != str(orgplayer) and count == 1:
                         self.protocol.send_chat_message(
-                            'You can only unclaim planets you\'ve claimed!'
+                            '^green;You can only unclaim planets you\'ve claimed!'
                         )
                         return
                     if data and first_name == str(orgplayer):
                         self.protocol.send_chat_message(
-                            'Use only /unclaim if you wish to '
+                            '^green;Use only /unclaim if you wish to '
                             'remove protection!'
                         )
                         return
@@ -307,26 +307,26 @@ class ClaimsPlugin(SimpleCommandPlugin):
                     del self.player_planets[planet]
                     self.protected_planets.remove(planet)
                     self.protocol.send_chat_message(
-                        'Planet successfully unclaimed.'
+                        '^green;Planet successfully unclaimed.'
                     )
                     self.logger.info('Unprotected planet %s', planet)
                     my_storage['claims'] = int(my_storage['claims']) - 1
                     self.protocol.player.storage = my_storage
                 else:
                     self.protocol.send_chat_message(
-                        'Planet has not been claimed!'
+                        '^green;Planet has not been claimed!'
                     )
             else:
                 if first_name in self.player_planets[planet]:
                     self.player_planets[planet].remove(first_name)
                     self.protocol.send_chat_message(
-                        'Removed ^yellow;{}^green; from planet list'.format(
+                        '^green;Removed ^yellow;{}^green; from planet list'.format(
                             first_name_color
                         )
                     )
                 else:
                     self.protocol.send_chat_message(
-                        'Cannot remove ^yellow;{}^green; '
+                        '^green;Cannot remove ^yellow;{}^green; '
                         'from planet list (not in list)'.format(
                             first_name_color
                         )
@@ -420,8 +420,8 @@ class ClaimsPlugin(SimpleCommandPlugin):
             )
             return
         if planet == 'On Outpost':
-            self.protocol.send_chat_message('^green;Instances cannot be claimed.')
-            self.logger.info('^green;Claiming of an instance denied.')
+            self.protocol.send_chat_message('^green;Instances ^red;cannot^green; be claimed.')
+            self.logger.info('Claiming of an instance denied.')
             return
         if planet not in self.protected_planets:
             self.protocol.send_chat_message(
@@ -429,7 +429,7 @@ class ClaimsPlugin(SimpleCommandPlugin):
         )
         else:
             if first_name:
-                #Ok, so, this is where we need to make sure the command issuer is the first entry on the claims and add first_name to the list if they are.
+                # make sure the command issuer is the first entry on the claims and add first_name to the list if they are.
                 if first_name == orgplayer:
                         self.protocol.send_chat_message(
                             '^green;Use /claim if you wish to claim a planet!'
@@ -437,7 +437,7 @@ class ClaimsPlugin(SimpleCommandPlugin):
                         return
                 elif self.player_planets[planet][0] == orgplayer:
                     self.protocol.send_chat_message('^green;Planet successfully claimed.')
-                    self.logger.info('^green;Protected planet %s', planet)
+                    self.logger.info('Protected planet %s', planet)
                     self.protocol.player.storage = my_storage
                     if first_name:
                         if planet not in self.player_planets:
