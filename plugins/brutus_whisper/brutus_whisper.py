@@ -41,9 +41,7 @@ class BRWhisperPlugin(SimpleCommandPlugin):
                 self.protocol.send_chat_message(self.whisper.__doc__)
                 return
             self.logger.info(
-                'Message to %s from %s: %s', (
-                    targetName, self.protocol.player.name, ' '.join(message)
-                )
+                'Message to %s from %s: %s', targetName, self.protocol.player.name, ' '.join(message)
             )
             self.sendWhisper(targetName, ' '.join(message))
         except (ValueError, TypeError):
