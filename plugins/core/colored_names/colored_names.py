@@ -1,3 +1,5 @@
+import re
+
 from datetime import datetime
 
 from base_plugin import BasePlugin
@@ -24,7 +26,12 @@ class ColoredNames(BasePlugin):
             p = chat_received().parse(data.data)
             if p.name == 'server':
                 return
-            sender = self.player_manager.get_by_org_name(str(p.name))
+            # Running a regex substitution on every chat message isn't exactly great but it'll have to do for now.
+            sender = self.player_manager.get_by_org_name(
+              str(
+                re.sub('\\^\\w+;|\\^#\\w+;|\\W', '', p.name)
+              )
+            )
             if self.config.chattimestamps:
                 p.name = '{}> <{}'.format(
                     now.strftime('%H:%M'),
