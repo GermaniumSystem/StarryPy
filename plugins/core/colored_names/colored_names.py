@@ -27,9 +27,9 @@ class ColoredNames(BasePlugin):
             if p.name == 'server':
                 return
             # Running a regex substitution on every chat message isn't exactly great but it'll have to do for now.
-            sender = self.player_manager.get_by_org_name(
+            sender = self.player_manager.get_by_name(
               str(
-                re.sub('\\^\\w+;|\\^#\\w+;|\\W', '', p.name)
+                re.sub('(\\^\\w+;|\\^#\\w+;|\\W)|(\\s\\s+)', '', p.name)
               )
             )
             if self.config.chattimestamps:
