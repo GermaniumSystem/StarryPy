@@ -146,6 +146,8 @@
                 "rocketexplosion",
                 "runbomb",
                 "rungas",
+                "satbomb",
+                "satbombblockexplosion",
                 "shockbomb",
                 "smallmeteor",
                 "smallregularexplosion",

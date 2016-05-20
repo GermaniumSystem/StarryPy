@@ -123,13 +123,16 @@ class WarpAliasType(IntEnum):
 class EntityType(IntEnum):
     END = -1
     PLAYER = 0
-    MONSTER = 1
-    OBJECT = 2
+    OBJECT = 1
+    #MONSTER = 1
+    #OBJECT = 2
     ITEMDROP = 3
-    PROJECTILE = 4
-    PLANT = 5
-    PLANTDROP = 6
-    EFFECT = 7
+    PROJECTILE = 5
+    MONSTER = 7
+    #PROJECTILE = 4
+    #PLANT = 5
+    #PLANTDROP = 6
+    #EFFECT = 7
     NPC = 8
 
 

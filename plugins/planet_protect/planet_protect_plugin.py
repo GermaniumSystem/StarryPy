@@ -254,6 +254,7 @@ class PlanetProtectPlugin(SimpleCommandPlugin):
                 self.protocol.player.access_level < UserLevels.ADMIN
         ):
             name = self.protocol.player.org_name
+            self.logger.vdebug(name)
             if name in self.player_planets[self.protocol.player.planet]:
                 return True
             else:
